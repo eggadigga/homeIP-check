@@ -43,7 +43,7 @@ def sendMail(sub,bod,isTls=True):
     smtp.set_debuglevel(1)
     if isTls:
         smtp.starttls()
-    smtp.login('alerts.digga@gmail.com','=mBa87P^tKS|')
+    smtp.login('alerts.digga@gmail.com','srhkgeatuyflmrtf')
     smtp.sendmail(sender, receiversAll, msg.as_string())
     print('Email Sent....')
     smtp.quit()

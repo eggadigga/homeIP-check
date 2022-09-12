@@ -6,13 +6,12 @@ import requests, os, urllib3, re
 from bs4 import BeautifulSoup
 from emailTool import sendMail
 
-if os.path.exists(r'c:\temp') == False:
-    os.mkdir(r'c:\temp')
+os.makedirs(r'c:\temp', exist_ok=True)
 os.chdir(r'c:\temp')
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-resp = requests.get('https://whatismyipaddress.com/', verify=False)
+resp = requests.get('https://www.iplocation.net/find-ip-address', verify=False)
 soup = BeautifulSoup(resp.text, 'html.parser')
 
 fname = 'IP-check.txt'
@@ -23,7 +22,8 @@ if os.path.exists(fname) == False:
 
 ipFile = open(fname, 'r')
 for ip in soup.strings:
-   if 'Your IP address' in repr(ip):
+   if 'IPv4' in repr(ip):
+       print(ip)
        for line in ipFile:
            if line not in ip:
                ipOnly = re.compile('\d+.*').findall(ip)[0]
