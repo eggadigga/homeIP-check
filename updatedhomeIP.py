@@ -1,36 +1,45 @@
 #! python3
-## updatedhomeIP.py - alert when Public IP changes
+## updatedhomeIP.py - alert when home Public IP changes
 
-from doctest import NORMALIZE_WHITESPACE
 import requests, os, urllib3, re
-from bs4 import BeautifulSoup
 from emailTool import sendMail
-
-os.makedirs(r'c:\temp', exist_ok=True)
-os.chdir(r'c:\temp')
+from dotenv import load_dotenv
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-resp = requests.get('https://www.iplocation.net/find-ip-address', verify=False)
-soup = BeautifulSoup(resp.text, 'html.parser')
+## get ipv4 addr
+ipaddr = requests.get('http://ipinfo.io/ip', verify=False).text
 
-fname = 'IP-check.txt'
+## directory and env etup
+base_dir = os.path.dirname(__file__)
+os.chdir(base_dir)
+config_dir = 'config'
+os.makedirs(config_dir, exist_ok=True)
+os.chdir(config_dir)
+load_dotenv('.env')
+
+### email configs
+mailusr = 'alerts.digga@gmail.com'
+mailpw = os.getenv('mailpw')
+sender = 'Ed Reyes <alerts.digga@gmail.com>'
+receivers = ['eggadigga19@gmail.com']
+cc = ['egga19@yahoo.com', 'eduardo.reyes120@gmail.com']
+server = 'smtp.gmail.com'
+
+### txt file with IP
+fname = 'ipv4.txt'
 if os.path.exists(fname) == False:
     ipFile = open(fname, 'w')
     ipFile.write('172.0.0.1 - placeholder')
     ipFile.close
 
 ipFile = open(fname, 'r')
-for ip in soup.strings:
-   if 'IPv4' in repr(ip):
-       print(ip)
-       for line in ipFile:
-           if line not in ip:
-               ipOnly = re.compile('\d+.*').findall(ip)[0]
-               open(fname, 'w').write(ipOnly)
-               emailSub = 'Eggadigga IP Has Changed'
-               sendMail(emailSub,ip)
-   else:
-       continue
-
+for line in ipFile:
+    if line not in ipaddr:
+        open(fname, 'w').write(ipaddr)
+        sub = 'EP Home IP Change'
+        body = 'IP is now: ' + ipaddr
+        sendMail(sender, receivers, cc, sub, body, mailusr, mailpw, server)
+    else:
+        continue
 ipFile.close()

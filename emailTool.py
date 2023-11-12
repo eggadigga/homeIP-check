@@ -9,14 +9,10 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 from email import encoders
 
-def sendMail(sub,bod,isTls=True):
-    sender = 'Ed Reyes <alerts.digga@gmail.com>'
-    receivers = ['eggadigga19@gmail.com']
-    cc = ['egga19@yahoo.com', 'eduardo.reyes120@gmail.com']
+def sendMail(sender, receivers, cc, sub, bod, mailusr, mailpw, server, isTls=True):
     receiversAll = receivers + cc
     subject = sub
     body = bod
-    server = 'smtp.gmail.com'
     port = 587
     msg = MIMEMultipart()
     msg['From'] = sender
@@ -38,12 +34,12 @@ def sendMail(sub,bod,isTls=True):
     # #msg.attach(part_two)
 
     #context = ssl.SSLContext(ssl.PROTOCOL_SSLv3)
-    #SSL connection only working on Python 3+
+    ##SL connection only working on Python 3+
     smtp = smtplib.SMTP(server, port)
-    smtp.set_debuglevel(1)
+    smtp.set_debuglevel(False)
     if isTls:
         smtp.starttls()
-    smtp.login('alerts.digga@gmail.com','srhkgeatuyflmrtf')
+    smtp.login(mailusr, mailpw)
     smtp.sendmail(sender, receiversAll, msg.as_string())
     print('Email Sent....')
     smtp.quit()
